@@ -1,0 +1,38 @@
+version: 0.2
+
+env:
+  parameter-store:
+    DOCKER_REGISTRY_USERNAME: /cicd/docker-credentials/username
+    DOCKER_REGISTRY_PASSWORD: /cicd/docker-credentials/password
+    SONAR_TOKEN: /cicd/sonar/sonar-token
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+      
+  pre_build:
+    commands:
+      - echo "Logging in to Docker Hub..."
+      - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
+      - IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}
+      - echo "Image tag is $IMAGE_TAG"
+      
+  build:
+    commands:
+      - echo "Building Docker image for linux/amd64..."
+      - docker build --platform linux/amd64 -t $DOCKER_REGISTRY_USERNAME/swiggy-clone:$IMAGE_TAG -t $DOCKER_REGISTRY_USERNAME/swiggy-clone:latest .
+      - echo "Pushing Docker image..."
+      - docker push $DOCKER_REGISTRY_USERNAME/swiggy-clone:$IMAGE_TAG
+      - docker push $DOCKER_REGISTRY_USERNAME/swiggy-clone:latest
+      
+  post_build:
+    commands:
+      - echo "Build completed on `date`"
+      - printf '[{"name":"swiggy-app","imageUri":"%s"}]' $DOCKER_REGISTRY_USERNAME/swiggy-clone:$IMAGE_TAG > imagedefinitions.json
+      - cat imagedefinitions.json
+
+artifacts:
+  files:
+    - appspec.yaml
+    - imagedefinitions.json

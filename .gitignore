@@ -1,0 +1,17 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+terraform.tfvars
+
+# Keys
+*.pem
+*.key
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+swiggy-clone-kp.pem
