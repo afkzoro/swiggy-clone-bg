@@ -13,6 +13,7 @@ phases:
       
   pre_build:
     commands:
+      - cd Swiggy_clone
       - echo "Logging in to Docker Hub..."
       - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c1-7)
