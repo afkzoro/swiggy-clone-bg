@@ -35,5 +35,5 @@ phases:
 
 artifacts:
   files:
-    - appspec.yaml
-    - imagedefinitions.json
+    - Swiggy_clone/appspec.yaml
+    - Swiggy_clone/imagedefinitions.json
