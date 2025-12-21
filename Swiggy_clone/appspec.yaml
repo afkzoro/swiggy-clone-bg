@@ -7,4 +7,3 @@ Resources:
         LoadBalancerInfo:
           ContainerName: "swiggy-app"
           ContainerPort: 3000
-        PlatformVersion: "LATEST"
