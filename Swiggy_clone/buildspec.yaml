@@ -31,9 +31,44 @@ phases:
     commands:
       - echo "Build completed on `date`"
       - printf '[{"name":"swiggy-app","imageUri":"%s"}]' $DOCKER_REGISTRY_USERNAME/swiggy-clone:$IMAGE_TAG > imagedefinitions.json
+      - |
+        cat > taskdef.json << EOF
+        {
+          "family": "swiggy-app",
+          "networkMode": "bridge",
+          "requiresCompatibilities": ["EC2"],
+          "cpu": "256",
+          "memory": "512",
+          "containerDefinitions": [
+            {
+              "name": "swiggy-app",
+              "image": "$DOCKER_REGISTRY_USERNAME/swiggy-clone:$IMAGE_TAG",
+              "cpu": 256,
+              "memory": 512,
+              "essential": true,
+              "portMappings": [
+                {
+                  "containerPort": 3000,
+                  "hostPort": 0,
+                  "protocol": "tcp"
+                }
+              ],
+              "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                  "awslogs-group": "/ecs/swiggy-app",
+                  "awslogs-region": "ap-northeast-1",
+                  "awslogs-stream-prefix": "ecs"
+                }
+              }
+            }
+          ]
+        }
+        EOF
       - cat imagedefinitions.json
+      - cat taskdef.json
 
 artifacts:
   files:
     - Swiggy_clone/appspec.yaml
-    - Swiggy_clone/imagedefinitions.json
+    - Swiggy_clone/taskdef.json
