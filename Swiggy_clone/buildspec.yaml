@@ -69,6 +69,7 @@ phases:
       - cat taskdef.json
 
 artifacts:
+  base-directory: Swiggy_clone
   files:
-    - Swiggy_clone/appspec.yaml
-    - Swiggy_clone/taskdef.json
+    - appspec.yaml
+    - taskdef.json
