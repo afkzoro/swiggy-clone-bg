@@ -69,6 +69,12 @@ variable "docker_username" {
   type = string
 }
 
+variable "docker_password" {
+  description = "Docker password or access token"
+  type = string
+  sensitive = true
+}
+
 variable "key_pair_name" {
   description = "Name of the EC2 key pair for SSH access"
   type        = string

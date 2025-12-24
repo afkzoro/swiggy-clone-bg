@@ -26,6 +26,7 @@ module "s3" {
 module "ssm" {
   source = "./modules/ssm"
   docker_username = var.docker_username
+  docker_password = var.docker_password
   sonar_token = var.sonar_token
 }
 
@@ -80,4 +81,30 @@ module "codedeploy" {
   green_target_group_name = module.alb.green_target_group_name
   
   depends_on = [module.iam, module.ecs, module.alb]
+}
+
+module "codebuild" {
+  source = "./modules/codebuild"
+  
+  project_name        = var.project_name
+  artifact_bucket_arn = module.s3.bucket_arn
+  
+  depends_on = [module.s3]
+}
+
+module "codepipeline" {
+  source = "./modules/codepipeline"
+  
+  project_name                    = var.project_name
+  artifact_bucket_name            = module.s3.bucket_name
+  artifact_bucket_arn             = module.s3.bucket_arn
+  codebuild_project_name          = module.codebuild.project_name
+  codebuild_project_arn           = module.codebuild.project_arn
+  codedeploy_app_name             = module.codedeploy.app_name
+  codedeploy_deployment_group_name = module.codedeploy.deployment_group_name
+  codestar_connection_arn         = var.codestar_connection_arn
+  github_repo                     = var.github_repo
+  github_branch                   = var.github_branch
+  
+  depends_on = [module.s3, module.codebuild, module.codedeploy]
 }
